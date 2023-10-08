@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5045874280744437203}
   - component: {fileID: 1808859266352355262}
-  - component: {fileID: 3580552790317749746}
   - component: {fileID: 388025176595319586}
   m_Layer: 6
   m_Name: Car
@@ -61,34 +60,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.3, y: 1, z: 2.5}
   m_Center: {x: 0, y: 0.5, z: 0}
---- !u!114 &3580552790317749746
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1415228758444246242}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d07e096b453ccb47a57b7298b741d0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  textFPS: {fileID: 0}
-  textSpeed: {fileID: 0}
-  textPath: {fileID: 0}
-  textTotalPath: {fileID: 0}
-  N_hp: 80
-  M: 1500
-  len: 0.5
-  mu: 0.5
-  maxWheelAngle: 35
-  needToCalculateResist: 1
-  K: 0.3
-  S: 1.3
-  Ro: 1.27
-  V_in_km_h: 0
-  MaxSpeed: 0
-  TotalPath: 0
 --- !u!54 &388025176595319586
 Rigidbody:
   m_ObjectHideFlags: 0

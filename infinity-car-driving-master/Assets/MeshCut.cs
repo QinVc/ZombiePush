@@ -18,6 +18,8 @@ public class MeshCut : MonoBehaviour
 
     private List<Vector2> UpUV = new List<Vector2>();
     private List<Vector2> DownUV = new List<Vector2>();
+
+    private List<Vector3> NewVetx = new List<Vector3>();
     // Start is called before the first frame update
     void Start()
     {
@@ -32,7 +34,6 @@ public class MeshCut : MonoBehaviour
             obj.AddComponent<MeshFilter>().mesh = cutMeshes[i];
             obj.AddComponent<MeshRenderer>().material = GetComponent<MeshRenderer>().material;
         }
-        meshFilter.mesh.uv2 = null;
     }
 
     private Mesh[] CutMesh(Plane cutPlane)
@@ -55,17 +56,11 @@ public class MeshCut : MonoBehaviour
             {
                 //情况1:都在上面
                 GenTriangle(ref UpVetx, ref UpTri, ref UpUV, i, i + 1, i + 2);
-                UpUV.Add(OriginMesh.uv[OriginMesh.triangles[i]]);
-                UpUV.Add(OriginMesh.uv[OriginMesh.triangles[i+1]]);
-                UpUV.Add(OriginMesh.uv[OriginMesh.triangles[i+2]]);
             }
             else if (!v1 && !v2 && !v3)
             {
-                GenTriangle(ref DownVetx, ref DownTri,ref DownUV, i, i + 1, i + 2);
                 //情况1:都在下面
-                DownUV.Add(OriginMesh.uv[OriginMesh.triangles[i]]);
-                DownUV.Add(OriginMesh.uv[OriginMesh.triangles[i + 1]]);
-                DownUV.Add(OriginMesh.uv[OriginMesh.triangles[i + 2]]);
+                GenTriangle(ref DownVetx, ref DownTri,ref DownUV, i, i + 1, i + 2);
             }
             else 
             {
@@ -90,6 +85,8 @@ public class MeshCut : MonoBehaviour
                     //注意需要顺时针设置三角形顶点，因为逆时针是网格背面，不可见
                     if (boolcount == true)
                     {
+                        NewVetx.Add(interaction2);
+                        NewVetx.Add(interaction1);
                         //上
                         //新生成的第一个三角形
                         GenNewTriangle(ref UpVetx, ref UpTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction1, interaction2);
@@ -103,6 +100,8 @@ public class MeshCut : MonoBehaviour
                     }
                     else
                     {
+                        NewVetx.Add(interaction1);
+                        NewVetx.Add(interaction2);
                         //下
                         GenNewTriangle(ref DownVetx, ref DownTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction1, interaction2);
                         //上
@@ -123,6 +122,8 @@ public class MeshCut : MonoBehaviour
 
                     if (boolcount == true)
                     {
+                        NewVetx.Add(interaction1);
+                        NewVetx.Add(interaction2);
                         //上
                         //新生成的第一个三角形
                         GenNewTriangle(ref UpVetx, ref UpTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction2, interaction1);
@@ -136,6 +137,8 @@ public class MeshCut : MonoBehaviour
                     }
                     else
                     {
+                        NewVetx.Add(interaction2);
+                        NewVetx.Add(interaction1);
                         //下
                         GenNewTriangle(ref DownVetx, ref DownTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction2, interaction1);
                         //上
@@ -156,6 +159,8 @@ public class MeshCut : MonoBehaviour
 
                     if (boolcount == true)
                     {
+                        NewVetx.Add(interaction2);
+                        NewVetx.Add(interaction1);
                         //上
                         //新生成的第一个三角形
                         GenNewTriangle(ref UpVetx, ref UpTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction1, interaction2);
@@ -169,6 +174,8 @@ public class MeshCut : MonoBehaviour
                     }
                     else
                     {
+                        NewVetx.Add(interaction1);
+                        NewVetx.Add(interaction2);
                         //下
                         GenNewTriangle(ref DownVetx, ref DownTri, OriginMesh.vertices[OriginMesh.triangles[StandloneVetx]], interaction1, interaction2);
                         //上
@@ -181,13 +188,33 @@ public class MeshCut : MonoBehaviour
                 }
             }
         }
+        Vector3 center = (NewVetx[0] + NewVetx[NewVetx.Count / 2]) * 0.5f;
+        //补面
+        for (int i = 0; i < NewVetx.Count; i += 2)
+        {
+            UpVetx.Add(center);
+            UpTri.Add(UpVetx.Count - 1);
+            UpVetx.Add(NewVetx[i]);
+            UpTri.Add(UpVetx.Count - 1);
+            UpVetx.Add(NewVetx[(i + 1) % NewVetx.Count]);
+            UpTri.Add(UpVetx.Count - 1);
+        }
+
         CutMeshes[0].vertices = UpVetx.ToArray();
         CutMeshes[0].triangles = UpTri.ToArray();
-        CutMeshes[0].uv = UpUV.ToArray();
+
+        for (int i = 0; i < NewVetx.Count; i += 2)
+        {
+            DownVetx.Add(center);
+            DownTri.Add(DownVetx.Count - 1);
+            DownVetx.Add(NewVetx[(i + 1) % NewVetx.Count]);
+            DownTri.Add(DownVetx.Count - 1);
+            DownVetx.Add(NewVetx[i]);
+            DownTri.Add(DownVetx.Count - 1);
+        }
 
         CutMeshes[1].vertices = DownVetx.ToArray();
         CutMeshes[1].triangles = DownTri.ToArray();
-        CutMeshes[1].uv = DownUV.ToArray();
 
         return CutMeshes;
     }
