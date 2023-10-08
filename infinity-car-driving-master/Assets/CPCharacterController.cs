@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum CharacterState 
+{
+    None = 0,
+    Runing= 1,
+    PreShoot= 2,
+}
+
 public class CPCharacterController : MonoBehaviour
 {
 
@@ -13,6 +20,7 @@ public class CPCharacterController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        InitWeapon();
     }
 
     // Update is called once per frame
@@ -22,11 +30,14 @@ public class CPCharacterController : MonoBehaviour
         moveVec.x = Input.GetAxis("Horizontal");
         moveVec.z = Input.GetAxis("Vertical");
 
-        if (moveVec.x > 0.05 || moveVec.z > 0.05)
+        if (Mathf.Abs(moveVec.x) > 0.05f || Mathf.Abs(moveVec.z) > 0.05f)
         {
-            characterController.SimpleMove(this.transform.TransformDirection(moveVec) * Speed);
+            moveVec=Camera.main.transform.TransformDirection(moveVec);
+            moveVec = new Vector3 (moveVec.x,0, moveVec.z);
+            characterController.Move(moveVec * Speed * SpeedOffset * Time.deltaTime);
+            if(CurrentState!=CharacterState.PreShoot)
+                transform.GetChild(1).rotation = Quaternion.LookRotation(moveVec,Vector3.up);
         }
-        Debug.Log(Vector3.Magnitude(moveVec) * Speed);
         animator.SetFloat("Speed", Vector3.Magnitude(moveVec)*Speed);
 
         if (Input.GetKeyDown(KeyCode.F))
@@ -43,8 +54,46 @@ public class CPCharacterController : MonoBehaviour
             }
         }
 
-  
+        if (Input.GetKey(KeyCode.Mouse1)) 
+        {
+            //Unity自带的Trigger只有在结束动画才会重置，如果提前按下却没有执行动画则状态不被清除,需要手动清除
+            animator.ResetTrigger("Shoot");
+            animator.SetBool("PreShoot", true);
+            SpeedOffset = 0.3f;
+            CurrentState = CharacterState.PreShoot;
+        }
+        else
+        {
+            animator.SetBool("PreShoot", false);
+            SpeedOffset = 1.0f;
+            CurrentState = CharacterState.None;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            //Unity自带的Trigger回复比较慢，且会缓存Trigger，需要手动清除
+/*            animator.ResetTrigger("Shoot");*/
+            animator.SetTrigger("Shoot");
+        }
     }
 
+    private void InitWeapon()
+    {
+        GameObject CurWeapon = Instantiate(Test_DefaultWeapon,CurWeaponSlot);
+        CurWeapon.transform.localPosition = Vector3.zero;
+        CurWeapon.transform.localRotation= Quaternion.identity;
+        CurWeapon.transform.localScale = Vector3.one;
+    }
+
+    public void OnFire() 
+    {
+       CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().Fire();
+    }
+    
+    public CharacterState GetCurState() { return CurrentState; }
     public float Speed;
+    private float SpeedOffset=1.0f;
+    private CharacterState CurrentState = CharacterState.None;
+    public Transform CurWeaponSlot;
+    public GameObject Test_DefaultWeapon;
 }

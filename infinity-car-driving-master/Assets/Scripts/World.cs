@@ -20,7 +20,6 @@ public class World : MonoBehaviour
 
     void Start()
     {
-        SpawnTile(-1);
         CarObj = Instantiate<GameObject>(CarPrefab);
         CharacterObj=Instantiate<GameObject>(CharacterPrefab);
         player = CharacterObj.transform;
@@ -29,59 +28,7 @@ public class World : MonoBehaviour
     
     void Update()
     {
-        if (player.position.z - (tileLength + 5) > zSpawn - (numberOfTiles * tileLength))
-        {
-            SpawnTile(Random.Range(0, tilePrefabs.Length));
-            DeleteTile();
-        }
 
-        if (player.transform.position.z > distanceToReload)
-            MoveWorld();
-    }
-
-    public void SpawnTile(int tileIndex)
-    {
-        if (tileIndex == -1)        //создание карты в начале
-        {
-            for (int i = 0; i < numberOfTiles; i++)
-                SpawnTile(Random.Range(0, tilePrefabs.Length));
-            
-        }
-        else                        //создание карты после начала
-        {
-            GameObject go = Instantiate(tilePrefabs[tileIndex], transform.forward * zSpawn, transform.rotation);
-            go.transform.SetParent(motherOfTiles);
-            activeTiles.Add(go);
-            zSpawn += tileLength;
-        }
-    }
-
-    private void DeleteTile(int num = 1)
-    {
-        if (num == -1)
-        {
-            for (int i = 0; i < numberOfTiles; i++)
-            {
-                Destroy(activeTiles[0]);     //удаляем со сцены
-                activeTiles.RemoveAt(0);     //удаляем со списка
-            }
-            zSpawn = 0;
-        }
-        else
-        {
-            Destroy(activeTiles[0]);     //удаляем со сцены
-            activeTiles.RemoveAt(0);     //удаляем со списка
-        }
-    }
-
-    void MoveWorld()
-    {
-        print("lapWorld");
-
-        DeleteTile(-1);
-        SpawnTile(-1);
-
-        player.position = new Vector3(player.position.x, player.position.y, 0f);
     }
 
     public Transform GetCurPlayer()

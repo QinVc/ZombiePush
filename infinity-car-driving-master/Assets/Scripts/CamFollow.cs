@@ -21,17 +21,23 @@ public class CamFollow : MonoBehaviour
         Quaternion rotationY = Quaternion.AngleAxis(-y, cam.transform.right);
         /*        Quaternion rot = rotationY * rot* rotationX;*/
         Quaternion rot = rotationX * rotationY * cam.transform.rotation;
-        Debug.Log(LayerMask.GetMask("Player"));
         if (Mathf.Pow(2, player.gameObject.layer) == LayerMask.GetMask("Player"))
         {
-            cam.transform.position = target.transform.TransformPoint(new Vector3(0, 0f, -5f));
-            player.transform.rotation = Quaternion.Slerp(Quaternion.Euler(0, player.rotation.eulerAngles.y, 0), Quaternion.Euler(0, rot.eulerAngles.y, 0), 15 * Time.deltaTime);
-            target.transform.rotation = Quaternion.Slerp(target.transform.rotation, rot, 15 * Time.deltaTime);
+            cam.transform.position = target.transform.TransformPoint(new Vector3(0, 0f, -3.5f));
+            target.transform.rotation = Quaternion.Lerp(target.transform.rotation, rot, 15 * Time.deltaTime);
+
+            if (player.GetComponent<CPCharacterController>().GetCurState() == CharacterState.PreShoot) 
+            {
+                target.rotation = player.transform.GetChild(1).rotation;
+                cam.transform.position = target.transform.TransformPoint(new Vector3(0.5f, -0.1f, -1f));
+                Quaternion playerRot = Quaternion.Euler(0, rot.eulerAngles.y, 0f);
+                player.GetChild(1).rotation = Quaternion.Lerp(player.GetChild(1).rotation, playerRot, 15 * Time.deltaTime);
+            }
         }
         else 
         {
             cam.transform.position = target.transform.TransformPoint(new Vector3(0, 0f, -5f));
-            target.transform.rotation = Quaternion.Slerp(target.transform.rotation, rot, 15 * Time.deltaTime);
+            target.transform.rotation = Quaternion.Lerp(target.transform.rotation, rot, 15 * Time.deltaTime);
         }
 
         if (rot.eulerAngles.x < 180)
