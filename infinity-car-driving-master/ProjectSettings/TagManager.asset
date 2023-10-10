@@ -15,10 +15,10 @@ TagManager:
   - UI
   - Car
   - Player
-  - 
-  - 
-  - 
-  - 
+  - EnemyHead
+  - EnemyHand
+  - EnemyBody
+  - EnemyLeg
   - 
   - 
   - 

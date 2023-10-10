@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+struct Damge
+{
+
+}
 public enum CharacterState 
 {
     None = 0,
@@ -10,7 +14,7 @@ public enum CharacterState
     PreShoot= 2,
 }
 
-public class CPCharacterController : MonoBehaviour
+public class CPCharacterController : Actor
 {
 
     Animator animator;

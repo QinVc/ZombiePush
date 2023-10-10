@@ -34,6 +34,7 @@ public class WeaponController : MonoBehaviour
 
         FireDirection = Vector3.Normalize(targetPos - FirePoint.position);
         GameObject MyBulletObj = Instantiate(MyBullet);
+        MyBulletObj.GetComponent<Bullet>().From = transform.parent.gameObject;
         MyBulletObj.transform.position = FirePoint.position;
         MyBulletObj.transform.LookAt(targetPos);
         MyBulletObj.GetComponent<Rigidbody>().AddForce(FireDirection*WeaponDistance,ForceMode.Impulse);
