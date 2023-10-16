@@ -8,6 +8,15 @@ public class CamFollow : MonoBehaviour
     public Transform target;
     public Transform player;
 
+    private void Start()
+    {
+        float[] distances = new float[32];
+        distances[8] =20;
+        distances[9] = 20;
+        distances[10] = 20;
+        distances[11] = 20;
+        cam.layerCullDistances = distances;
+    }
     void LateUpdate()
     {
         player = World.GameWorld.GetComponent<World>().GetCurPlayer();

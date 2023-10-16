@@ -12,14 +12,14 @@ public class GameAgent : MonoBehaviour
 
     /** Random number generator. */
     private Random m_random = new Random();
-    public float StopDistance;
-    public float LostDistance;
+    private ZombieAI m_zombieAI;
     //受击之类的特殊事件导致的短暂停止,值代表帧数
     public int bSkipTick=0;
     private bool delmark=false;
     // Use this for initialization
     void Start()
     {
+        m_zombieAI=transform.GetComponent<ZombieAI>();
     }
 
     // Update is called once per frame
@@ -29,7 +29,7 @@ public class GameAgent : MonoBehaviour
 
         World CurWorld = World.GameWorld.GetComponent<World>();
         Vector2 goalVector= new Vector2(0, 0);
-        if (bSkipTick<=0&&Vector3.Magnitude(CurWorld.player.position - transform.position) > StopDistance&& Vector3.Magnitude(CurWorld.player.position - transform.position) <= LostDistance)
+        if (bSkipTick<=0&&Vector3.Magnitude(CurWorld.player.position - transform.position) > m_zombieAI.AttackDistance && Vector3.Magnitude(CurWorld.player.position - transform.position) <= m_zombieAI.DetectDistance)
         {
             Simulator.Instance.StartAgent(sid);
             goalVector = new Vector2(CurWorld.player.position.x, CurWorld.player.position.z) - Simulator.Instance.getAgentPosition(sid);

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using Tree = BehaviorTree.Tree;
 
 
@@ -11,6 +12,7 @@ public class Rikayon : Actor {
     public float Attackcooldonwn = 2f;
     public float MaxAttackCooldown = 2.0f;
     public float AttackRange = 10f;
+    public float DetectRange = 20f;
     public Transform AttackPoint;
 
     // Use this for initialization
@@ -57,11 +59,28 @@ public class Rikayon : Actor {
         HP -= inDamge.value;
         if (HP <= 0)
         {
+            animator.ResetTrigger("Hit");
             OnDead();
         }
         else
         {
             animator.SetTrigger("Hit");
+            if (CurState == AIState.None) DetectRange = 100f;
         }
+    }
+
+    public override void OnDead()
+    {
+        if (CurState == AIState.Dead) return;
+        base.OnDead();
+        GetComponent<NavMeshAgent>().isStopped=true;
+        animator.SetBool("Dead",true);
+        CurState = AIState.Dead;
+        Invoke("BeginDestory",2f);
+    }
+
+    public void BeginDestory()
+    {
+        Destroy(this.gameObject);
     }
 }

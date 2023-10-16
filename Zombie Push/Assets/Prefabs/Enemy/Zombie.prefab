@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1194146968307829979}
   - component: {fileID: 6851409762963309979}
   - component: {fileID: -9044507658626159798}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Zombie
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -119,9 +119,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HP: 100
+  CurState: 0
   DetectDistance: 15
   AttackDistance: 1.5
-  CurState: 0
 --- !u!114 &-9044507658626159798
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,9 +12,6 @@ using Vector2 = RVO.Vector2;
 public class ORCAGameMainManager : SingletonBehaviour<ORCAGameMainManager>
 {
     public GameObject agentPrefab;
-    public Transform[] EnemyRebornPoint;
-    public int EachPointCount;
-
     private Plane m_hPlane = new Plane(Vector3.up, Vector3.zero);
     private Dictionary<int, GameAgent> m_agentMap = new Dictionary<int, GameAgent>();
 
@@ -23,20 +20,19 @@ public class ORCAGameMainManager : SingletonBehaviour<ORCAGameMainManager>
     {
         Simulator.Instance.setTimeStep(0.025f);
         // setAgentDefaults(float neighborDist, int maxNeighbors, float timeHorizon, float timeHorizonObst, float radius, float maxSpeed, Vector2 velocity)
-        Simulator.Instance.setAgentDefaults(15.0f, 12, 5.0f, 5.0f, 1f, 3.0f, new Vector2(0.0f, 0.0f));
+        Simulator.Instance.setAgentDefaults(5.0f, 50, 3.0f, 3.0f, 1f, 3.0f, new Vector2(0.0f, 0.0f));
 
         // add in awake
         Simulator.Instance.processObstacles();
-
-        GenEnemy();
     }
 
-    private void GenEnemy()
+    public void GenEnemy(int min,int max, Transform[] points)
     {
-        for(int i = 0; i < EnemyRebornPoint.Length; i++)
+        for(int i = 0; i < points.Length; i++)
         {
-            for(int j=0;j<EachPointCount;j++)
-                CreatAgent(EnemyRebornPoint[i].position+new Vector3(UnityEngine.Random.Range(-10,10),0, UnityEngine.Random.Range(-10, 10)));
+            int EachPointCount= UnityEngine.Random.Range(min,max);
+            for (int j=0;j<EachPointCount;j++)
+                CreatAgent(points[i].position+new Vector3(UnityEngine.Random.Range(-10,10),0, UnityEngine.Random.Range(-10, 10)));
         }
     }
 
@@ -58,7 +54,7 @@ public class ORCAGameMainManager : SingletonBehaviour<ORCAGameMainManager>
         if (sid >= 0)
         {
             /*            GameObject go = LeanPool.Spawn(agentPrefab, new Vector3(pos.x, 0, pos.z), Quaternion.identity);*/
-            GameObject go = GetComponent<ObjectPoolManager>().Spawn(agentPrefab, new Vector3(pos.x, 0, pos.z), Quaternion.identity);
+            GameObject go = GetComponent<ObjectPoolManager>().Spawn(agentPrefab, new Vector3(pos.x, 0, pos.z), Quaternion.EulerAngles(new Vector3(0f,UnityEngine.Random.Range(0,360),0)));
             GameAgent ga = go.GetComponent<GameAgent>();
             Assert.IsNotNull(ga);
             ga.sid = sid;

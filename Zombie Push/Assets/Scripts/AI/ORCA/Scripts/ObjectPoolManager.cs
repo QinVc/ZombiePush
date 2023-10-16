@@ -21,7 +21,7 @@ public class ObjectPoolManager : MonoBehaviour
     public Dictionary<GameObject, GameObject> Object2PrefabLinks = new Dictionary<GameObject, GameObject>();
     public List<DelyDestoryObj> DelyDestoryList = new List<DelyDestoryObj>();
     public GameObject TestPrefab;
-    public GameObject Spawn(GameObject Prefab, Vector3 Pos, Quaternion Rot,int CreateCapacity=30)
+    public GameObject Spawn(GameObject Prefab, Vector3 Pos, Quaternion Rot,int CreateCapacity=100)
     {
         GameObject GenObject;
         if (Prefab2PoolLinks.ContainsKey(Prefab))
@@ -99,9 +99,18 @@ public class ObjectPoolManager : MonoBehaviour
             if (DelyDestoryList[i].life <= 0) 
             {
                 DeSpawn(DelyDestoryList[i].obj);
-                DelyDestoryList[i].obj.transform.position = new Vector3(120, 0, -280);
+                if (DelyDestoryList[i].obj!=null) 
+                {
+                    DelyDestoryList[i].obj.transform.position = new Vector3(120, 0, -280);
+                }
                 DelyDestoryList.RemoveAt(i);
             }
         }
+    }
+
+    private void OnDestroy()
+    {
+        Prefab2PoolLinks.Clear();
+        Object2PrefabLinks.Clear();
     }
 }

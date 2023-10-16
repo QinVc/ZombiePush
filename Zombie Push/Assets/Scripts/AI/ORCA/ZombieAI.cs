@@ -25,9 +25,6 @@ public class ZombieAI : Actor
     {
         animator = GetComponent<Animator>();
         ORCAagent=GetComponent<GameAgent>();
-        ORCAagent.StopDistance = AttackDistance;
-        ORCAagent.LostDistance = DetectDistance;
-
         MyDamge.from = this;
 
     }
@@ -87,6 +84,11 @@ public class ZombieAI : Actor
         ORCAagent.bSkipTick = 60;
     }
 
+    public void AnyStateToAttack()
+    {
+        ORCAagent.bSkipTick = 150;
+    }
+
     public override void OnDamge(ActorDamge inDamge)
     {
         base.OnDamge(inDamge);
@@ -97,6 +99,15 @@ public class ZombieAI : Actor
         }
         else 
         {
+            if (CurState == AIState.None) 
+            {
+                DetectDistance = 100;
+                Collider[] Neiburs = Physics.OverlapBox(transform.position, new Vector3(10, 10, 10), Quaternion.identity);
+                for (int i = 0; i < Neiburs.Length; i++)
+                {
+                    Neiburs[i].transform.root.GetComponent<ZombieAI>().DetectDistance = 100;
+                }
+            }
             animator.SetTrigger("Hit");
             AnyStateToHit();
         }
@@ -104,6 +115,7 @@ public class ZombieAI : Actor
 
     public void OnAttack()
     {
+        AnyStateToAttack();
         RaycastHit hitInfo;
         Vector3 Origin =new Vector3(this.transform.position.x,0.5f, this.transform.position.z);
         if (Physics.Raycast(Origin, this.transform.forward,out hitInfo,3f,LayerMask.GetMask("Player"))) 
@@ -121,6 +133,8 @@ public class ZombieAI : Actor
         CurState= AIState.Dead;
         ORCAagent.BeforeDestory();
     }
+
+
 
     private void OnDestroy()
     {
