@@ -87,7 +87,6 @@ public class GameController : MonoBehaviour
     {
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
-        gameUI.SetActive(false);
         startUI.SetActive(true);
         Time.timeScale = 0f;
     }

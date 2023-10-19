@@ -37,6 +37,7 @@ public class Rikayon : Actor {
 
     public void CreateDamge(int value) 
     {
+        DamgeEvent.value = value;
         Collider[] colliders = Physics.OverlapBox(AttackPoint.position, new Vector3(1,1,5), Quaternion.identity, LayerMask.GetMask("Player"));
         for (int i = 0; i < colliders.Length; i++)
         {

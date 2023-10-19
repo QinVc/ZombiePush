@@ -193,6 +193,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   HP: 100
+  MaxHP: 100
   CurState: 0
   Speed: 5
   CurWeaponSlot: {fileID: 3438702105712690869}

@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 public enum CharacterState 
 {
     None = 0,
     Runing= 1,
     PreShoot= 2,
+    Reload=3
 }
 
 public class CPCharacterController : Actor
@@ -14,6 +16,12 @@ public class CPCharacterController : Actor
 
     Animator animator;
     CharacterController characterController;
+    public float Speed;
+    public bool IsAim=false;
+    private float SpeedOffset = 1.0f;
+    private CharacterState CurrentState = CharacterState.None;
+    public Transform CurWeaponSlot;
+    public GameObject Test_DefaultWeapon;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,14 +39,20 @@ public class CPCharacterController : Actor
 
         if (Mathf.Abs(moveVec.x) > 0.05f || Mathf.Abs(moveVec.z) > 0.05f)
         {
+            //人物的行走坐标系是相机View
             moveVec =Camera.main.transform.TransformDirection(moveVec);
             moveVec = new Vector3(moveVec.x, 0, moveVec.z);
             moveVec = Vector3.Normalize(moveVec);
             characterController.Move(moveVec * Speed * SpeedOffset * Time.deltaTime);
-            if(CurrentState!=CharacterState.PreShoot)
+            if(!IsAim)
                 transform.GetChild(1).rotation = Quaternion.LookRotation(moveVec,Vector3.up);
         }
         animator.SetFloat("Speed", Vector3.Magnitude(moveVec)*Speed);
+
+        if (CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().weaponType == WeaponType.Pistol)
+            animator.SetBool("Rifle", false);
+        else
+            animator.SetBool("Rifle", true);
 
         if (Input.GetKeyDown(KeyCode.F))
         {
@@ -58,32 +72,54 @@ public class CPCharacterController : Actor
         {
             //Unity自带的Trigger只有在结束动画才会重置，如果提前按下却没有执行动画则状态不被清除,需要手动清除
             animator.ResetTrigger("Shoot");
-            if(CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().weaponType==WeaponType.Pistol)
-                animator.SetBool("PreShoot", true);
-            else
-                animator.SetBool("PreShootRifle", true);
-
+            animator.SetBool("PreShoot", true);
+            IsAim = true;
             SpeedOffset = 0.3f;
             CurrentState = CharacterState.PreShoot;
         }
-        else
+
+        if (Input.GetKeyDown(KeyCode.R))
         {
+            Reload();
+        }
+
+        if (Input.GetKeyUp(KeyCode.Mouse1)) 
+        { 
+            IsAim=false;
             animator.SetBool("PreShoot", false);
-            animator.SetBool("PreShootRifle", false);
-            SpeedOffset = 1.0f;
-            CurrentState = CharacterState.None;
+            if (CurrentState == CharacterState.Reload) 
+            {
+                SpeedOffset = 0.3f;
+            }
+            else 
+            {
+                SpeedOffset = 1.0f;
+                CurrentState = CharacterState.None;
+            }
         }
 
         if (Input.GetKey(KeyCode.Mouse0))
         {
+          /*  if (CurrentState == CharacterState.Reload) return;*/
             //Unity自带的Trigger回复比较慢，且会缓存Trigger，需要手动清除
             animator.ResetTrigger("Shoot");
-            animator.SetTrigger("Shoot");
-            animator.SetBool("RifleStop", false);
+            if (CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().CurAmmoInClip > 0&&CurrentState!=CharacterState.Reload) 
+            {
+                Debug.Log(CurrentState);
+                Debug.Log("+");
+                animator.SetTrigger("Shoot");
+                animator.SetBool("RifleStop", false);
+            }
+            else 
+            {
+                animator.SetBool("RifleStop", true);
+            }
+
         }
 
         if (Input.GetKeyUp(KeyCode.Mouse0))
         {
+            animator.ResetTrigger("Shoot");
             animator.SetBool("RifleStop",true);
         }
     }
@@ -99,6 +135,21 @@ public class CPCharacterController : Actor
     public void OnFire() 
     {
        CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().Fire();
+    }
+
+    public void Reload() 
+    {
+        CurrentState = CharacterState.Reload;
+        SpeedOffset = 0.3f;
+        animator.SetBool("Reload",true);
+    }
+
+    public void AfterReloadAnim()
+    {
+        CurrentState=CharacterState.None;
+        SpeedOffset = 1f;
+        CurWeaponSlot.GetChild(0).GetComponent<WeaponController>().Reload();
+        animator.SetBool("Reload", false);
     }
 
     public override void OnDamge(ActorDamge inDamge)
@@ -120,9 +171,5 @@ public class CPCharacterController : Actor
     }
 
     public CharacterState GetCurState() { return CurrentState; }
-    public float Speed;
-    private float SpeedOffset=1.0f;
-    private CharacterState CurrentState = CharacterState.None;
-    public Transform CurWeaponSlot;
-    public GameObject Test_DefaultWeapon;
+
 }

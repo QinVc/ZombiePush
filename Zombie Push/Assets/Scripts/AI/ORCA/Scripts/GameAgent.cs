@@ -44,7 +44,10 @@ public class GameAgent : MonoBehaviour
         {
             Vector2 pos = Simulator.Instance.getAgentPosition(sid);
             Vector2 vel = Simulator.Instance.getAgentPrefVelocity(sid);
-            transform.position = new Vector3(pos.x(), transform.position.y, pos.y());
+            if (!float.IsNaN(pos.x()) || !float.IsNaN(pos.y())) 
+            {
+                transform.position = new Vector3(pos.x(), transform.position.y, pos.y());
+            }
             if (Math.Abs(vel.x()) > 0.01f && Math.Abs(vel.y()) > 0.01f)
                 transform.forward = new Vector3(vel.x(), 0, vel.y()).normalized;
         }
@@ -77,10 +80,5 @@ public class GameAgent : MonoBehaviour
         Simulator.Instance.StartAgent(sid);
         Simulator.Instance.setAgentPosition(sid, new Vector2(Pos.x, Pos.z));
         delmark = false;
-    }
-
-    private void OnDestroy()
-    {
-        GetComponent<ORCAGameMainManager>().DeleteAgent(sid);
     }
 }

@@ -21,10 +21,14 @@ public class ZombieAI : Actor
     GameAgent ORCAagent;
     ActorDamge MyDamge;
     // Start is called before the first frame update
+
+    private void Awake()
+    {
+        ORCAagent = GetComponent<GameAgent>();
+    }
     void Start()
     {
         animator = GetComponent<Animator>();
-        ORCAagent=GetComponent<GameAgent>();
         MyDamge.from = this;
 
     }
@@ -32,6 +36,7 @@ public class ZombieAI : Actor
     private void OnEnable()
     {
         HP = 100;
+        if(ORCAagent.sid != -1)
         ORCAagent.OnReborn(transform.position);
     }
     private void Update()
@@ -132,12 +137,5 @@ public class ZombieAI : Actor
         animator.SetTrigger("Dead");
         CurState= AIState.Dead;
         ORCAagent.BeforeDestory();
-    }
-
-
-
-    private void OnDestroy()
-    {
-        
     }
 }

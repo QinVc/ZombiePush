@@ -35,7 +35,7 @@ public class CamFollow : MonoBehaviour
             cam.transform.position = Vector3.Slerp(cam.transform.position, target.transform.TransformPoint(new Vector3(0, 0f, -3.5f)),20*Time.deltaTime);
             target.transform.rotation = Quaternion.Lerp(target.transform.rotation, rot, 15 * Time.deltaTime);
 
-            if (player.GetComponent<CPCharacterController>().GetCurState() == CharacterState.PreShoot) 
+            if (player.GetComponent<CPCharacterController>().IsAim == true) 
             {
                 target.rotation = player.transform.GetChild(1).rotation;
                 cam.transform.position = target.transform.TransformPoint(new Vector3(0.5f, -0.1f, -1f));
@@ -57,7 +57,7 @@ public class CamFollow : MonoBehaviour
         {
             rot = Quaternion.Euler(Mathf.Clamp(rot.eulerAngles.x, 300, 360), rot.eulerAngles.y, 0);
         }
-            
+             
         cam.transform.rotation = rot;
     }
 }

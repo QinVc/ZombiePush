@@ -27,7 +27,11 @@ public class DamgeUI : MonoBehaviour
 
     IEnumerator BindDelegate()
     {
-        while (World.GameWorld == null) yield return null;
+        while (World.GameWorld == null)
+        {
+            Debug.Log("UI绑定");
+            yield return null;
+        }
         World.GameWorld.GetComponent<DelegateManager>().OnPlayerBeDamge += PlayerDamgeUI;
         Debug.Log("UI委托绑定完成");
     }

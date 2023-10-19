@@ -11,6 +11,7 @@ public struct ActorDamge
 public class Actor : MonoBehaviour
 {
     public int HP;
+    public int MaxHP;
     public AIState CurState;
     public virtual void OnDamge(ActorDamge inDamge) { }
     public virtual void OnDead() { }
