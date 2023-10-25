@@ -30,6 +30,6 @@ public class WeaponStatusUI : MonoBehaviour
         }
         Debug.Log("ÕÊº“Yesº”‘ÿ");
         player = World.GameWorld.GetComponent<World>().player.GetComponent<CPCharacterController>();
-        weaponController= player.CurWeaponSlot.GetChild(0).GetComponent<WeaponController>();
+        weaponController= player.CurWeapon.GetComponent<WeaponController>();
     }
 }
